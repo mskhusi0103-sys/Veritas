@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Veritas AI</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+
+body{
+font-family:Arial,sans-serif;
+background:#F8F6F2;
+}
+
+
+header{
+background:white;
+padding:25px;
+display:flex;
+justify-content:space-between;
+border-bottom:1px solid #ddd;
+}
+
+
+.logo{
+font-size:35px;
+font-weight:bold;
+color:#65161C;
+}
+
+
+.back{
+color:#65161C;
+text-decoration:none;
+}
+
+
+.container{
+max-width:900px;
+margin:auto;
+padding:30px;
+}
+
+
+.chat{
+
+background:white;
+height:500px;
+padding:25px;
+border-radius:20px;
+overflow-y:auto;
+box-shadow:0 10px 30px #ddd;
+
+}
+
+
+
+.message{
+
+padding:15px;
+margin-bottom:15px;
+border-radius:15px;
+line-height:1.6;
+
+}
+
+
+.user{
+
+background:#65161C;
+color:white;
+margin-left:120px;
+
+}
+
+
+.ai{
+
+background:#eee;
+margin-right:120px;
+
+}
+
+
+
+.input{
+
+display:flex;
+gap:10px;
+margin-top:20px;
+
+}
+
+
+
+input{
+
+flex:1;
+padding:15px;
+border:none;
+border-radius:10px;
+font-size:16px;
+
+}
+
+
+
+button{
+
+background:#65161C;
+color:white;
+border:none;
+padding:15px 30px;
+border-radius:10px;
+cursor:pointer;
+
+}
+
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+<header>
+
+<div class="logo">
+VERITAS
+</div>
+
+
+<a class="back" href="index.html">
+← Home
+</a>
+
+
+</header>
+
+
+
+
+<div class="container">
+
+
+<div class="chat" id="chat">
+
+
+<div class="message ai">
+
+Hiii,
+
+<br><br>
+
+I am Veritas AI. Ask me about the Internet Restrictions in Delhi investigation.
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="input">
+
+
+<input id="question" placeholder="Ask your question...">
+
+
+<button onclick="sendMessage()">
+Send
+</button>
+
+
+</div>
+
+
+</div>
+
+
+
+
+<script src="internet-data.js"></script>
+
+
+
+<script>
+
+
+const chat=document.getElementById("chat");
+
+const input=document.getElementById("question");
+
+
+
+// ENTER BUTTON SUPPORT
+
+input.addEventListener("keypress",function(e){
+
+if(e.key==="Enter"){
+
+sendMessage();
+
+}
+
+});
+
+
+
+
+// HOMEPAGE QUESTION
+
+
+window.onload=function(){
+
+let saved=localStorage.getItem("veritasQuery");
+
+
+if(saved){
+
+addUser(saved);
+
+setTimeout(()=>{
+
+processQuestion(saved);
+
+},800);
+
+
+localStorage.removeItem("veritasQuery");
+
+}
+
+};
+
+
+
+
+
+function sendMessage(){
+
+
+let question=input.value.trim();
+
+
+if(question==="") return;
+
+
+
+addUser(question);
+
+
+input.value="";
+
+
+setTimeout(()=>{
+
+processQuestion(question);
+
+},700);
+
+
+}
+
+
+
+
+
+
+
+function addUser(text){
+
+
+let div=document.createElement("div");
+
+div.className="message user";
+
+div.innerText=text;
+
+
+chat.appendChild(div);
+
+
+chat.scrollTop=chat.scrollHeight;
+
+
+}
+
+
+
+
+
+
+
+function cleanText(text){
+
+
+return text
+
+.toLowerCase()
+
+.replace(/(.)\1+/g,"$1")
+
+.replace(/[^\w\s]/g,"")
+
+.trim();
+
+
+}
+
+
+
+
+
+
+
+function processQuestion(question){
+
+
+
+let q=cleanText(question);
+
+
+let response=null;
+
+
+
+
+// GREETING SYSTEM
+
+
+if(
+
+q.includes("hi") ||
+
+q.includes("hello") ||
+
+q.includes("hey")
+
+){
+
+
+response=
+`Hiee,
+
+I am Veritas AI, an investigation assistant.
+
+I analyse verified information and provide context-based answers from my investigation database.`;
+
+
+}
+
+
+
+
+
+else{
+
+
+for(let key in internetDataset.intents){
+
+
+
+let intent=internetDataset.intents[key];
+
+
+
+for(let word of intent.keywords){
+
+
+if(q.includes(word.toLowerCase())){
+
+
+response=intent.answer;
+
+break;
+
+
+}
+
+
+}
+
+
+
+if(response){
+
+break;
+
+}
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+if(!response){
+
+response=internetDataset.fallback;
+
+}
+
+
+
+typeResponse(response);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function typeResponse(text){
+
+
+let box=document.createElement("div");
+
+
+box.className="message ai";
+
+
+chat.appendChild(box);
+
+
+
+let i=0;
+
+
+
+let timer=setInterval(()=>{
+
+
+box.innerHTML+=text.charAt(i);
+
+
+i++;
+
+
+chat.scrollTop=chat.scrollHeight;
+
+
+
+if(i>=text.length){
+
+
+clearInterval(timer);
+
+
+}
+
+
+},20);
+
+
+
+}
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
